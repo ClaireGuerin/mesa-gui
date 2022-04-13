@@ -4,7 +4,7 @@
 # Here, the view will be the window you’ll see on your screen.
 
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QTextEdit
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QComboBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -38,12 +38,13 @@ class ViewGUI(QMainWindow):
         layout = QVBoxLayout()
         selectText = QLabel('Select model')
         self._createDropDownMenu()
-        self._createModelEditor()
+        self._createModelEditor('testfiles/simulationcode.py')
         self._createUpdateButton()
         
         layout.addWidget(selectText)
         layout.addWidget(self._dropDownMenu)
-        layout.addWidget(self.updateButton)
+        layout.addWidget(self._codeView)
+        layout.addWidget(self._updateButton)
         self.generalLayout.addLayout(layout)
         
     def _createDropDownMenu(self):
@@ -54,13 +55,21 @@ class ViewGUI(QMainWindow):
         menu.addItem('Viral Network')
         self._dropDownMenu = menu
         
-    def _createModelEditor(self):
-        pass
+    def _createModelEditor(self, codeFile):
+        self._codeView = QTextEdit()
+        with open(codeFile, 'r') as f:
+            codeString = f.read() # read code file
+            self._codeView.append(codeString)
         
     def _createUpdateButton(self):
-        self.updateButton = QPushButton('Update Code')
+        self._updateButton = QPushButton('Update Code')
         
     def _createWebView(self):
         webEngineView = QWebEngineView() # create the webview widget
-        webEngineView.setHtml('<h1>Web view</h1>')
+        self._loadPageToWebEngine(engine=webEngineView, htmlFile='testfiles/webpage.html')
         self.generalLayout.addWidget(webEngineView)
+        
+    def _loadPageToWebEngine(self, engine, htmlFile):
+        with open(htmlFile, 'r') as f:
+            htmlString = f.read()
+            engine.setHtml(htmlString) # set html to webview widget
